@@ -1,4 +1,4 @@
-const Movie = require('../models/movie');
+const { Movie } = require('../models/movie');
 // genre and director models are imported in the movie model
 
 // GET /db

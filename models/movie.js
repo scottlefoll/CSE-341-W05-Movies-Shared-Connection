@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const movieSchema = new mongoose.Schema({
+    _id: String,
     Title: String,
     Year: String,
     Rated: String,
@@ -24,11 +25,13 @@ const movieSchema = new mongoose.Schema({
   });
 
 const genreSchema = new mongoose.Schema({
+    _id: String,
     type: String,
     description: String,
   });
 
   const directorSchema = new mongoose.Schema({
+    _id: String,
     firstName: String,
     lastName: String,
     dateOfBirth: String,
