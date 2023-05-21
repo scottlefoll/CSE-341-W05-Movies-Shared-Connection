@@ -48,7 +48,6 @@ async function getMovieById(req, res, id) {
 async function getMovieByTitle(req, res, title) {
     console.log('getMovieByTitle called');
     console.log('title:', title);
-    const client = new MongoClient(uri);
     try {
       const result = await Movie.findOne({ Title: { $regex: new RegExp(`^${title}$`, 'i') } });
       if (!result || result.length === 0) {
@@ -92,9 +91,7 @@ async function getMoviesByPartialTitle(req, res, title) {
     } catch (err) {
         console.error(err);
         throw err;
-    } finally {
-        await client.close();
-    }
+    } 
 }
 
     // POST /create
