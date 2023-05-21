@@ -91,7 +91,7 @@ async function getMoviesByPartialTitle(req, res, title) {
     } catch (err) {
         console.error(err);
         throw err;
-    } 
+    }
 }
 
     // POST /create
