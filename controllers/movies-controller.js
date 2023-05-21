@@ -1,12 +1,5 @@
 const Movie = require('../models/movie');
-const User = require('../models/user');
-const Review = require('../models/review');
-
-// require('dotenv').config();
-// const uri = process.env.MONGODB_URI;
-// const dbName = process.env.DB_NAME;
-// const coll = process.env.DB_COLLECTION;
-
+// genre and director models are imported in the movie model
 
 // GET /db
 async function getDBList(req, res) {
