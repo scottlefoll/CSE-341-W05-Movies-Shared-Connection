@@ -1,4 +1,5 @@
 const routes = require('express').Router();
+const {param, query, validationResult} = require('express-validator');
 const moviesController = require('../controllers/movies-controller');
 
 
@@ -29,8 +30,12 @@ routes.get('/movies', async (req, res, next) => {
   });
 
 
-routes.get('/movies/:id', async (req, res, next) => {
+routes.get('/movies/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0-9]{4}$/), async (req, res, next) => {
     console.log('in /movies/:id route');
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+        return res.status(400).json({ errors: result.array() });
+    }
     try {
       const collection = await moviesController.getMovieById(req, res, req.params.id);
       res.send(collection);
@@ -39,8 +44,12 @@ routes.get('/movies/:id', async (req, res, next) => {
     }
   });
 
-  routes.get('/title/:Title', async (req, res, next) => {
+routes.get('/title/:Title', param('Title').notEmpty().isAlphanumeric().isLength({ max: 50 }), async (req, res, next) => {
     console.log('in /movies/:title route');
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+        return res.status(400).json({ errors: result.array() });
+    }
     try {
       const collection = await moviesController.getMovieByTitle(req, res, req.params.Title);
       res.send(collection);
@@ -49,8 +58,12 @@ routes.get('/movies/:id', async (req, res, next) => {
     }
   });
 
-routes.get('/partial/:Title', async (req, res, next) => {
+routes.get('/partial/:Title', param('Title').notEmpty().isAlphanumeric().isLength({ max: 50 }), async (req, res, next) => {
   console.log('in /movies/partial/:title route');
+  const result = validationResult(req);
+  if (!result.isEmpty()) {
+      return res.status(400).json({ errors: result.array() });
+  }
   try {
     const collection = await moviesController.getMoviesByPartialTitle(req, res, req.params.Title);
     res.send(collection);
@@ -60,8 +73,12 @@ routes.get('/partial/:Title', async (req, res, next) => {
 });
 
 
-routes.get('/director/:name', async (req, res, next) => {
+routes.get('/director/:name', param('name').notEmpty(), async (req, res, next) => {
     console.log('in /movies/director/:name route');
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+        return res.status(400).json({ errors: result.array() });
+    }
     try {
       const collection = await moviesController.getMoviesByDirector(req, res, req.params.name);
       res.send(collection);
@@ -80,8 +97,12 @@ routes.post('/create', async (req, res, next) => {
     }
 });
 
-routes.put('/update/:id', async (req, res, next) => {
+routes.get('/update/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0-9]{4}$/), async (req, res, next) => {
     console.log('in /movies/update/:id route');
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+        return res.status(400).json({ errors: result.array() });
+    }
     try {
       await moviesController.updateMovie(req, res, req.params.id);
     } catch (err) {
@@ -89,8 +110,13 @@ routes.put('/update/:id', async (req, res, next) => {
     }
   });
 
-  routes.delete('/delete/:id', async (req, res, next) => {
+
+  routes.get('/delete/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0-9]{4}$/), async (req, res, next) => {
     console.log('in /movies/delete/:id route');
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+        return res.status(400).json({ errors: result.array() });
+    }
     try {
       await moviesController.deleteMovie(req, res, req.params.id);
     } catch (err) {
