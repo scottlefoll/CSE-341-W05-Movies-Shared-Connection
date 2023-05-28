@@ -30,7 +30,14 @@ routes.get('/movies', async (req, res, next) => {
   });
 
 
-routes.get('/movies/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0-9]{4}$/), async (req, res, next) => {
+// routes.get('/movies/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0-9]{4}$/), async (req, res, next) => {
+routes.get('/movies/:id', [
+    param('id')
+        .notEmpty()
+        .withMessage('Movie ID is required')
+        .matches(/^[A-Za-z0-9]{2,}_[A-Za-z0-9]{4}$/)
+        .withMessage('Movie ID must be in the format "{Title}_{Year}", where Title and Year are alphanumeric, Year is 4 characters long, and Title is at least 2 characters long.')
+    ], async (req, res, next) => {
     console.log('in /movies/:id route');
     const result = validationResult(req);
     if (!result.isEmpty()) {
@@ -44,7 +51,16 @@ routes.get('/movies/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0
     }
   });
 
-routes.get('/title/:Title', param('Title').notEmpty().isAlphanumeric().isLength({ max: 50 }), async (req, res, next) => {
+// routes.get('/title/:Title', param('Title').notEmpty().isAlphanumeric().isLength({ max: 50 }), async (req, res, next) => {
+routes.get('/title/:Title', [
+    param('Title')
+        .notEmpty()
+        .withMessage('Title is required')
+        .isAlphanumeric()
+        .withMessage('Title is case insensitive, and must contain only alphanumeric characters')
+        .isLength({ min: 2, max: 50 })
+        .withMessage('Title must be at least 2 characters and not exceed 50 characters')
+    ], async (req, res, next) => {
     console.log('in /movies/:title route');
     const result = validationResult(req);
     if (!result.isEmpty()) {
@@ -58,7 +74,16 @@ routes.get('/title/:Title', param('Title').notEmpty().isAlphanumeric().isLength(
     }
   });
 
-routes.get('/partial/:Title', param('Title').notEmpty().isAlphanumeric().isLength({ max: 50 }), async (req, res, next) => {
+// routes.get('/partial/:Title', param('Title').notEmpty().isAlphanumeric().isLength({ max: 50 }), async (req, res, next) => {
+routes.get('/partial/:Title', [
+    param('Title')
+        .notEmpty()
+        .withMessage('Partial title is required')
+        .isAlphanumeric()
+        .withMessage('Partial title is case insensitive, and must contain only alphanumeric characters')
+        .isLength({ min: 2, max: 50 })
+        .withMessage('Partial title must be at least 2 characters and not exceed 50 characters')
+    ], async (req, res, next) => {
   console.log('in /movies/partial/:title route');
   const result = validationResult(req);
   if (!result.isEmpty()) {
@@ -73,7 +98,13 @@ routes.get('/partial/:Title', param('Title').notEmpty().isAlphanumeric().isLengt
 });
 
 
-routes.get('/director/:name', param('name').notEmpty(), async (req, res, next) => {
+routes.get('/director/:name', [
+  param('name')
+    .matches(/^[A-Za-z]{2,}$/)
+    .withMessage('Director name is case insensitive and may be partial, and must contain only alphabetic characters and have a minimum length of 2')
+    .notEmpty()
+    .withMessage('Director name is required')
+], async (req, res, next) => {
     console.log('in /movies/director/:name route');
     const result = validationResult(req);
     if (!result.isEmpty()) {
@@ -97,7 +128,14 @@ routes.post('/create', async (req, res, next) => {
     }
 });
 
-routes.put('/update/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0-9]{4}$/), async (req, res, next) => {
+// routes.put('/update/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0-9]{4}$/), async (req, res, next) => {
+routes.put('/update/:id', [
+    param('id')
+        .notEmpty()
+        .withMessage('Movie ID is required')
+        .matches(/^[A-Za-z0-9]{2,}_[A-Za-z0-9]{4}$/)
+        .withMessage('Movie ID must be in the format "{title}_{Year}", where Title and Year are alphanumeric, Year is 4 characters long, and Title is at least 2 characters long.')
+    ], async (req, res, next) => {
     console.log('in /movies/update/:id route');
     const result = validationResult(req);
     if (!result.isEmpty()) {
@@ -111,7 +149,14 @@ routes.put('/update/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0
   });
 
 
-  routes.delete('/delete/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0-9]{4}$/), async (req, res, next) => {
+// routes.delete('/delete/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0-9]{4}$/), async (req, res, next) => {
+routes.get('/delete/:id', [
+    param('id')
+        .notEmpty()
+        .withMessage('Movie ID is required')
+        .matches(/^[A-Za-z0-9]{2,}_[A-Za-z0-9]{4}$/)
+        .withMessage('Movie ID must be in the format "{title}_{Year}", where Title and Year are alphanumeric, Year is 4 characters long, and Title is at least 2 characters long.')
+    ], async (req, res, next) => {
     console.log('in /movies/delete/:id route');
     const result = validationResult(req);
     if (!result.isEmpty()) {

@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "MongoDB Mongoose Movie API",
-    "description": "CSE 331 W04 MongoDB Movie API",
+    "description": "CSE 331 W04 MongoDB Mongoose Movie API",
     "version": "1.0.0"
   },
   "host": "cse341-spring23-w05-mongoose-shared.onrender.com",
@@ -43,6 +43,7 @@
     "/movies/{id}": {
       "get": {
         "description": "Get single movie by id (ie. 'avatar_2009'), case insensitive",
+        "example":"'avatar_2009', 'Avatar_2009', 'AVATAR_2009'",
         "parameters": [
           {
             "name": "id",
@@ -60,7 +61,8 @@
     },
     "/director/{name}": {
       "get": {
-        "description": "Get all movies by Director name (ie. 'steven spielberg') - case insensitive",
+        "description": "Get all movies by Director name (ie. 'steven spielberg') - case insensitive. Note: Director name is not unique, so multiple movies may be returned. Director name is case insensitive and may be a partial match, and must contain only alphabetic characters and have a minimum length of 2",
+        "example":"'James Cameron', 'james cameron', 'cameron', 'cam'",
         "parameters": [
           {
             "name": "name",
@@ -78,7 +80,8 @@
     },
     "/title/{title}": {
       "get": {
-        "description": "Get single movie by Title (ie. 'avatar') - case insensitive",
+        "description": "Get single movie by Title (ie. 'avatar') - case insensitive. Note: Title is unique, so only a single movie is returned. Title is case insensitive, and must contain only alphabetic characters and have a minimum length of 2",
+        "example":"'Avatar', 'avatar'",
         "parameters": [
           {
             "name": "title",
@@ -95,7 +98,8 @@
     },
     "/partial/{title}": {
         "get": {
-          "description": "Get all movies match a partial title (ie. 'avat') - case insensitive",
+          "description": "Get all movies that match a partial title (ie. 'avat') - case insensitive. Partial Title is case insensitive and may be a partial match, and must contain only alphabetic characters and have a minimum length of 2",
+          "example":"'Avatar', 'avatar', 'avat'",
           "parameters": [
             {
               "name": "title",
@@ -193,7 +197,8 @@
     },
     "/update/{id}": {
         "put": {
-            "description": "Update a Contact by id(ie. 'jane_doe')",
+            "description": "Update a movie by id (ie. 'avatar_2009'), case insensitive",
+            "example":"'avatar_2009', 'Avatar_2009', 'AVATAR_2009'",
             "parameters": [
               {
                 "name": "id",
@@ -283,7 +288,8 @@
         },
     "/delete/{id}": {
       "delete": {
-        "description": "Delete a movie by id (ie. 'avatar_2009')",
+        "description": "Delete a movie by id (ie. 'avatar_2009'), case insensitive",
+        "example":"'avatar_2009', 'Avatar_2009', 'AVATAR_2009'",
         "parameters": [
           {
             "name": "id",
