@@ -101,7 +101,7 @@ async function getMoviesByPartialTitle(req, res, title) {
 
 async function createMovie(req, res) {
     console.log('createMovie called');
-    console.log('req.body:', req.body[0]);
+    console.log('req.body:', req.body);
     console.log('req.body._id:', req.body[0]._id);
     console.log('req.body.title:', req.body[0].Title);
     console.log('req.body.year:', req.body[0].Year);
@@ -164,6 +164,7 @@ async function createMovie(req, res) {
         Type,
       });
   
+      console.log('newMovie:', newMovie);
       // Save the movie object to the database
       const createdMovie = await newMovie.save();
   
