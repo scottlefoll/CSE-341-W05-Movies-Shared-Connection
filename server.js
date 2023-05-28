@@ -1,7 +1,8 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
+app.use(bodyParser.json());
 // const router = express.Router();
-// const bodyParser = require('body-parser');
 // router.use('/', require('./swagger'));
 
 app.use(express.json());

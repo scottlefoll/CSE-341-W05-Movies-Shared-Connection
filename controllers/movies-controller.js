@@ -94,106 +94,98 @@ async function getMoviesByPartialTitle(req, res, title) {
     }
 }
 
-    // POST /create
-  async function createMovie(req, res)
-    {
-        console.log('createMovie called');
-        let _id;
-        try
-        {
-            const {
-                    _id,
-                    Title,
-                    Year,
-                    Rated,
-                    Released,
-                    Runtime,
-                    Genre,
-                    Director,
-                    Writer,
-                    Actors,
-                    Plot,
-                    Language,
-                    Country,
-                    Awards,
-                    Poster,
-                    Metascore,
-                    imdbRating,
-                    imdbVotes,
-                    imdbID,
-                    Type,
-
-                } = req.body;
-
-                // create a unique ID
-                _id = `${Title}_${Year}`.replace(/\s/g, '').toLowerCase();
-
-                const newMovie =
-                {
-                    _id,
-                    Title,
-                    Year,
-                    Rated,
-                    Rated,
-                    Released,
-                    Runtime,
-                    Genre,
-                    Director,
-                    Writer,
-                    Actors,
-                    Plot,
-                    Language,
-                    Country,
-                    Awards,
-                    Poster,
-                    Metascore,
-                    imdbRating,
-                    imdbVotes,
-                    imdbID,
-                    Type,
-                };
-
-            // Save the movie object to the database
-            const createdMovie = await newMovie.save();
-
-            return res.status(201).json({
-                statusCode: 201,
-                message: 'Movie created successfully',
-                createdMovieId: createdMovie._id.toString(),
-            });
-
-            // if (result.insertedId) {
-            //     const createdMovieId = result.insertedId;
-            //     return res.status(201).json({
-            //       statusCode: 201,
-            //       message: 'Movie created successfully',
-            //       createdMovieId: createdMovieId.toString(),
-            //     });
-            //   } else {
-            //     return res.status(500).json({
-            //       statusCode: 500,
-            //       message: 'Movie creation failed 1',
-            //       id: _id,
-            //     });
-            //   }
-        } catch (err) {
-                console.error(err);
-                if (err.code === 11000) {
-                    return res.status(400).json({
-                    statusCode: 400,
-                    message: 'Duplicate key violation. Movie creation failed',
-                    id: _id,
-                    keyValue: err.keyValue,
-                    });
-                } else {
-                    return res.status(500).json({
-                    statusCode: 500,
-                    message: 'Movie creation failed',
-                    id: _id,
-                    });
-                }
-        } 
+async function createMovie(req, res) {
+    console.log('createMovie called');
+    console.log('req.body:', req.body[0]);
+    console.log('req.body._id:', req.body[0]._id);
+    console.log('req.body.title:', req.body[0].Title);
+    console.log('req.body.year:', req.body[0].Year);
+    let _id2;
+    try {
+      let _id = req.body[0]._id;
+      let Title = req.body[0].Title;
+      let Year = req.body[0].Year;
+      let Rated = req.body[0].Rated;
+      let Released = req.body[0].Released;
+      let Runtime = req.body[0].Runtime;
+      let Genre = req.body[0].Genre;
+      let Director = req.body[0].Director;
+      let Writer = req.body[0].Writer;
+      let Actors = req.body[0].Actors;
+      let Plot = req.body[0].Plot;
+      let Language = req.body[0].Language;
+      let Country = req.body[0].Country;
+      let Awards = req.body[0].Awards;
+      let Poster = req.body[0].Poster;
+      let Metascore = req.body[0].Metascore;
+      let imdbRating = req.body[0].imdbRating;
+      let imdbVotes = req.body[0].imdbVotes;
+      let imdbID = req.body[0].imdbID;
+      let Type = req.body[0].Type;
+  
+      if (_id === null || _id === undefined || _id === '') {
+        // create a unique ID
+        _id2 = `${Title}_${Year}`.replace(/\s/g, '').toLowerCase();
+      } else {
+        _id2 = _id;
+      }
+  
+      console.log('33 create id2:', _id2);
+      console.log('33 create id:', _id);
+      console.log('33 create title:', Title);
+      console.log('33 create year:', Year);
+  
+      // Create the movie object using the Movie model in Mongoose
+      const newMovie = new Movie({
+        _id: _id2,
+        Title,
+        Year,
+        Rated,
+        Released,
+        Runtime,
+        Genre,
+        Director,
+        Writer,
+        Actors,
+        Plot,
+        Language,
+        Country,
+        Awards,
+        Poster,
+        Metascore,
+        imdbRating,
+        imdbVotes,
+        imdbID,
+        Type,
+      });
+  
+      // Save the movie object to the database
+      const createdMovie = await newMovie.save();
+  
+      return res.status(201).json({
+        statusCode: 201,
+        message: 'Movie created successfully',
+        createdMovieId: createdMovie._id.toString(),
+      });
+    } catch (err) {
+      console.error(err);
+      if (err.code === 11000) {
+        return res.status(400).json({
+          statusCode: 400,
+          message: 'Duplicate key violation. Movie creation failed',
+          id: req.body._id,
+          keyValue: err.keyValue,
+        });
+      } else {
+        return res.status(500).json({
+          statusCode: 500,
+          message: 'Movie creation failed',
+          id: req.body._id,
+        });
+      }
     }
+  }
+  
 
 // PUT /update/:id
 async function updateMovie(req, res, id) {
@@ -203,42 +195,63 @@ async function updateMovie(req, res, id) {
 
     console.log('updateMovie called');
     try {
-      const movieId = id || `${req.body.Title}_${req.body.Year}`.replace(/\s/g, '').toLowerCase();
+      const movieId = req.params.id;
+    console.log('movieId:', movieId);
 
       // Dynamically build the update object based on the fields present in the request body
-      const updateFields = {};
-      for (const [key, value] of Object.entries(req.body)) {
-        updateFields[key] = value;
-      }
+      const updateFields = req.body[0];
+      delete updateFields['_id'];
 
-    // Find the movie with the specified ID and update it with the update object
-    const result = await Movie.findOneAndUpdate({ _id: movieId }, updateFields);
+      console.log('updateFields:', updateFields);
 
-    if (result) {
-        res.send({ message: `Movie ${movieId} updated successfully` });
-        // Check if the update contained the Title and/or Year fields, and if so, update the _id
-        if (updateFields.Title || updateFields.Year) {
-          await changeMovieId(movieId);
+      // Start a session for the atomic transaction
+      const session = await Movie.startSession();
+      // Use a transaction to ensure atomicity
+      session.startTransaction();
+
+      try {
+        // Find the movie with the specified ID and update it with the update object
+        const result = await Movie.findOneAndUpdate({ _id: movieId }, updateFields, { new: true });
+        console.log('result:', result);
+
+        if (result) {
+            // Check if the update contained the Title and/or Year fields, and if so, update the _id
+            if (updateFields.Title || updateFields.Year) {
+                await changeMovieId(movieId, res);
+            }
+
+            // Commit the transaction
+            await session.commitTransaction();
+            res.status(200).send({ message: `Movie ${movieId} updated successfully`, updatedMovie: result });
+        } else {
+            await session.abortTransaction();
+            res.status(404).send({ message: `Movie ${movieId} not found` });
         }
-      } else {
-        res.status(404).send({ message: `Movie ${movieId} not found` });
+      } catch (err) {
+            console.error(err);
+            throw err;
+            res.status(500).send({ message: `Movie ${movieId} update failed` });
+      } finally {
+            session.endSession();
       }
     } catch (err) {
-      console.error(err);
-      throw err;
+        console.error(err);
+        res.status(500).send({ message: `Movie ${movieId} update failed` });
     }
   }
 
     //  This function is for the internal use of the updateContact() function
     //  It creates a new _id if the firstName or lastName fields are changed
-  async function changeMovieId(_id) {
+  async function changeMovieId(_id, res) {
     console.log('changeMovieId called');
     try {
         // Find the old movie record by the _id parameter
         const oldMovie = await Movie.findOne({ _id });
+        console.log('oldMovie:', oldMovie);
 
         // Generate a new _id based on the Title and Year fields
         const newMovieId = `${oldMovie.Title.toLowerCase().replace(/\s/g, '')}_${oldMovie.Year}`;
+        console.log('newMovieId:', newMovieId);
         // Check if the new _id is the same as the old one or already exists
         if (newMovieId === _id || (await Movie.findOne({ _id: newMovieId }))) {
             return;
@@ -267,17 +280,19 @@ async function updateMovie(req, res, id) {
                 Type: oldMovie.Type,
             };
 
-            // Insert the new movie object into the database
-            const createdMovie = await newMovie.save();
+            console.log('newMovie:', newMovie);
+            // Create a new instance of the Movie model
+            const newMovieInstance = new Movie(newMovie);
+            // Save the new movie instance to the database
+            const createdMovie = await newMovieInstance.save();
+
+            console.log('createdMovie:', createdMovie);
 
             if (createdMovie) {
                 // Delete the old movie record
                 await Movie.deleteOne({ _id });
-                return res.status(201).json({
-                    statusCode: 201,
-                    message: 'Movie created successfully',
-                    data: createdMovie,
-                });
+                console.log('Movie deleted successfully after update - old movie id: ' + _id);
+                return createdMovie;
             }
     } catch (err) {
             console.error(err);

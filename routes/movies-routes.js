@@ -97,7 +97,7 @@ routes.post('/create', async (req, res, next) => {
     }
 });
 
-routes.get('/update/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0-9]{4}$/), async (req, res, next) => {
+routes.put('/update/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0-9]{4}$/), async (req, res, next) => {
     console.log('in /movies/update/:id route');
     const result = validationResult(req);
     if (!result.isEmpty()) {
@@ -111,7 +111,7 @@ routes.get('/update/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0
   });
 
 
-  routes.get('/delete/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0-9]{4}$/), async (req, res, next) => {
+  routes.delete('/delete/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0-9]{4}$/), async (req, res, next) => {
     console.log('in /movies/delete/:id route');
     const result = validationResult(req);
     if (!result.isEmpty()) {
