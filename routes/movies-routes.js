@@ -150,7 +150,7 @@ routes.put('/update/:id', [
 
 
 // routes.delete('/delete/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0-9]{4}$/), async (req, res, next) => {
-routes.get('/delete/:id', [
+routes.delete('/delete/:id', [
     param('id')
         .notEmpty()
         .withMessage('Movie ID is required')
