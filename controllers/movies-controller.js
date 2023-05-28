@@ -17,30 +17,34 @@ async function getDBList(req, res) {
 async function getMovies(req, res) {
     console.log('getMovies called');
     try {
-        const result = await Movie.find({});
-        if (result.length === 0) {
+      const result = await Movie.find({});
+      if (result.length === 0) {
         throw { statusCode: 404, message: 'No movies found' };
-        }
-        return result;
+      }
+      return result;
     } catch (err) {
-        console.error(err);
-        throw err;
-    } 
-}
+      console.error(err);
+      if (err.statusCode !== 404) {
+        res.status(500).json({ message: 'Internal server error' });
+      }
+      throw err;
+    }
+  }
 
 // GET /movies/:id  ('gameofthrones_2011')
 async function getMovieById(req, res, id) {
     console.log('getMovieById called');
     console.log('searching for id:', id);
     try {
-        const result = await Movie.findOne({ _id: id });
-        if (!result) {
-            res.status(404).send('Movie not found: ' + id);
-        }
-        return result;
+      const result = await Movie.findOne({ _id: id });
+      if (!result || result.length === 0) {
+        res.status(404).json({ message: 'No movie found for id: ' + id });
+      }
+      return result;
     } catch (err) {
-        console.error(err);
-        throw err;
+      console.error(err);
+      res.status(500).json({ message: 'Internal server error' });
+      throw err;
     }
 }
 
@@ -51,15 +55,15 @@ async function getMovieByTitle(req, res, title) {
     try {
       const result = await Movie.findOne({ Title: { $regex: new RegExp(`^${title}$`, 'i') } });
       if (!result || result.length === 0) {
-        res.status(404).send('Movie not found: ' + title);
-      } else {
-        return result;
+        res.status(404).send('No movie found matching title: ' + title);
       }
+      return result;
     } catch (err) {
-        console.error(err);
-        throw err;
+      console.error(err);
+      res.status(500).send({ message: 'Internal server error' });
+      throw err;
     }
-}
+  }
 
 // GET /partial/:title (ie. 'game', case insensitive)
 async function getMoviesByPartialTitle(req, res, title) {
@@ -67,15 +71,15 @@ async function getMoviesByPartialTitle(req, res, title) {
     try {
       const result = await Movie.find({ Title: { $regex: title, $options: 'i' } }).sort({ Title: 1 });
       if (!result || result.length === 0) {
-        res.status(404).send('No movies found matching: ' + title);
-      } else {
-        return result;
+        res.status(404).send('No movies found matching partial title: ' + title);
       }
+      return result;
     } catch (err) {
-        console.error(err);
-        throw err;
-    } 
-}
+      console.error(err);
+      res.status(500).send({ message: 'Internal server error' });
+      throw err;
+    }
+  }
 
     // GET /director/:name (ie. 'john cameron', case insensitive)
   async function getMoviesByDirector(req, res, name) {
@@ -84,12 +88,13 @@ async function getMoviesByPartialTitle(req, res, title) {
     try {
       const result = await Movie.find({ Director: { $regex: name, $options: 'i' } }).sort({ Director: 1 });
       if (!result || result.length === 0) {
-        res.status(404).send('No movies found with Director matching: ' + name);
+        res.status(404).send('No movies found with Director name matching: ' + name);
       } else {
         return result;
       }
     } catch (err) {
         console.error(err);
+        res.status(500).send({ message: 'Internal server error' });
         throw err;
     }
 }
@@ -323,6 +328,7 @@ async function deleteMovie(req, res, id) {
       }
     } catch (err) {
       console.error(err);
+      res.status(500).send({ message: 'Internal server error' });
       throw err;
     }
   }

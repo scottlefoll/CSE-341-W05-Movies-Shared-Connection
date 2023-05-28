@@ -42,7 +42,7 @@
     },
     "/movies/{id}": {
       "get": {
-        "description": "Get single movie by id (ie. 'avatar_2009'), case insensitive",
+        "description": "Get single movie by id (ie. 'avatar_2009'). Movie ID must be in the format 'Title_Year', where Title is case-insensitive, alphanumeric and at least 2 characters long, and Year is numeric, and between 1900 and the current year.",
         "example":"'avatar_2009', 'Avatar_2009', 'AVATAR_2009'",
         "parameters": [
           {
@@ -197,7 +197,7 @@
     },
     "/update/{id}": {
         "put": {
-            "description": "Update a movie by id (ie. 'avatar_2009'), case insensitive",
+            "description": "Update single movie by id (ie. 'avatar_2009'). Movie ID must be in the format 'Title_Year', where Title is case-insensitive, alphanumeric and at least 2 characters long, and Year is numeric, and between 1900 and the current year.",
             "example":"'avatar_2009', 'Avatar_2009', 'AVATAR_2009'",
             "parameters": [
               {
@@ -288,7 +288,7 @@
         },
     "/delete/{id}": {
       "delete": {
-        "description": "Delete a movie by id (ie. 'avatar_2009'), case insensitive",
+        "description": "Delete a single movie by id (ie. 'avatar_2009'). Movie ID must be in the format 'Title_Year', where Title is case-insensitive, alphanumeric and at least 2 characters long, and Year is numeric, and between 1900 and the current year.",
         "example":"'avatar_2009', 'Avatar_2009', 'AVATAR_2009'",
         "parameters": [
           {

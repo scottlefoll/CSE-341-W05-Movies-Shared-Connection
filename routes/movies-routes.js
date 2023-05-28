@@ -35,8 +35,8 @@ routes.get('/movies/:id', [
     param('id')
         .notEmpty()
         .withMessage('Movie ID is required')
-        .matches(/^[A-Za-z0-9]{2,}_[A-Za-z0-9]{4}$/)
-        .withMessage('Movie ID must be in the format "{Title}_{Year}", where Title and Year are alphanumeric, Year is 4 characters long, and Title is at least 2 characters long.')
+        .matches(new RegExp(`^[A-Za-z0-9]{2,}_(19[0-9]{2}|20${new Date().getFullYear().toString().slice(-2)})$`))
+        .withMessage('Movie ID must be in the format "{Title}_{Year}", where Title is alphanumeric and at least 2 characters long, and Year is numeric, and between 1900 and the current year.')
     ], async (req, res, next) => {
     console.log('in /movies/:id route');
     const result = validationResult(req);
@@ -133,8 +133,8 @@ routes.put('/update/:id', [
     param('id')
         .notEmpty()
         .withMessage('Movie ID is required')
-        .matches(/^[A-Za-z0-9]{2,}_[A-Za-z0-9]{4}$/)
-        .withMessage('Movie ID must be in the format "{title}_{Year}", where Title and Year are alphanumeric, Year is 4 characters long, and Title is at least 2 characters long.')
+        .matches(new RegExp(`^[A-Za-z0-9]{2,}_(19[0-9]{2}|20${new Date().getFullYear().toString().slice(-2)})$`))
+        .withMessage('Movie ID must be in the format "{Title}_{Year}", where Title is alphanumeric and at least 2 characters long, and Year is numeric, and between 1900 and the current year.')
     ], async (req, res, next) => {
     console.log('in /movies/update/:id route');
     const result = validationResult(req);
@@ -154,8 +154,8 @@ routes.get('/delete/:id', [
     param('id')
         .notEmpty()
         .withMessage('Movie ID is required')
-        .matches(/^[A-Za-z0-9]{2,}_[A-Za-z0-9]{4}$/)
-        .withMessage('Movie ID must be in the format "{title}_{Year}", where Title and Year are alphanumeric, Year is 4 characters long, and Title is at least 2 characters long.')
+        .matches(new RegExp(`^[A-Za-z0-9]{2,}_(19[0-9]{2}|20${new Date().getFullYear().toString().slice(-2)})$`))
+        .withMessage('Movie ID must be in the format "{Title}_{Year}", where Title is alphanumeric and at least 2 characters long, and Year is numeric, and between 1900 and the current year.')
     ], async (req, res, next) => {
     console.log('in /movies/delete/:id route');
     const result = validationResult(req);
