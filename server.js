@@ -4,7 +4,7 @@ const app = express();
 app.use(bodyParser.json());
 // const router = express.Router();
 // router.use('/', require('./swagger'));
-
+const curr_year = new Date().getFullYear().toString().slice(-2);
 app.use(express.json());
 require('dotenv').config();
 
