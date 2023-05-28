@@ -190,7 +190,7 @@ async function createMovie(req, res) {
       }
     }
   }
-  
+
 
 // PUT /update/:id
 async function updateMovie(req, res, id) {

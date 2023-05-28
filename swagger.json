@@ -61,7 +61,7 @@
     },
     "/director/{name}": {
       "get": {
-        "description": "Get all movies by Director name (ie. 'steven spielberg') - case insensitive. Note: Director name is not unique, so multiple movies may be returned. Director name is case insensitive and may be a partial match, and must contain only alphabetic characters and have a minimum length of 2",
+        "description": "Get all movies by Director name (ie. 'James Cameron', 'james cameron', 'cameron', or 'cam') - case insensitive. Note: Director name is not unique, so multiple movies may be returned. Director name is case insensitive and may be a partial match, and must contain only alphabetic characters and have a minimum length of 2",
         "example":"'James Cameron', 'james cameron', 'cameron', 'cam'",
         "parameters": [
           {
@@ -80,7 +80,7 @@
     },
     "/title/{title}": {
       "get": {
-        "description": "Get single movie by Title (ie. 'avatar') - case insensitive. Note: Title is unique, so only a single movie is returned. Title is case insensitive, and must contain only alphabetic characters and have a minimum length of 2",
+        "description": "Get single movie by Title (ie. 'Avatar', or 'avatar') - case insensitive. Note: Title is unique, so only a single movie is returned. Title is case insensitive, and must contain only alphanumeric characters and have a minimum length of 2",
         "example":"'Avatar', 'avatar'",
         "parameters": [
           {
@@ -98,7 +98,7 @@
     },
     "/partial/{title}": {
         "get": {
-          "description": "Get all movies that match a partial title (ie. 'avat') - case insensitive. Partial Title is case insensitive and may be a partial match, and must contain only alphabetic characters and have a minimum length of 2",
+          "description": "Get all movies that match a partial title (ie. 'avat') - case insensitive. Partial Title is case insensitive and may be a partial match, and must contain only alphanumeric characters and have a minimum length of 2",
           "example":"'Avatar', 'avatar', 'avat'",
           "parameters": [
             {
