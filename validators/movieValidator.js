@@ -1,7 +1,6 @@
 const { Movie, Genre, Director } = require('../models/movie');
 
 const curr_year = new Date().getFullYear().toString().slice(-2);
-
 const { body, validationResult } = require('express-validator')
 const userValidationRules = () => {
   return [
@@ -25,35 +24,74 @@ const validate = (req, res, next) => {
   })
 }
 
-
-function validateMovieFields(req, res, next) {
-    console.log('validateFields called');
+// const validateMovieFields = async (req, res, next) => {
+const validateMovieFields = (req, res, next) => {
+    console.log('validateMovieFields called');
     const errors = [];
-    if (!req.body[0].Title || req.body[0].Title.length < 2 || req.body[0].Title.length > 50) {
-        errors.push('Title is required, and must be between 2 and 50 characters. ');
+
+    if (req.params.id) {
+        const idErrors = validateMovieId(req, res, next, errors); // Invoke validateMovieId and pass errors array
+    } else {
+        errors.push('MovieId is required. ');
     }
-    if (!req.body[0].Year || req.body[0].Year < 1900 || req.body[0].Year > parseInt("20" + curr_year)) {
+
+    if (!req.body[0].Title || !/^[A-Za-z0-9\s-]{2,50}$/.test(req.body[0].Title)) {
+        errors.push('Title is required, and must be between 2 and 50 alphanumeric characters or spaces. ');
+    }
+    if (!req.body[0].Year || parseInt(req.body[0].Year) < 1900 || parseInt(req.body[0].Year) > new Date().getFullYear()) {
         errors.push('ReleaseYear is required, and must be between 1900 and the current year, inclusive.');
     }
-    if (!req.body[0].Rated || req.body[0].Rated.length < 1 || req.body[0].Rated.length > 20) {
-        errors.push('Rated is required, and must be between 1 and 20 characters. ');
+    if (!req.body[0].Rated || !/^[A-Za-z0-9\s]{1,20}$/.test(req.body[0].Rated)) {
+        errors.push('Rated is required, and must be between 1 and 20 alphanumeric characters or spaces. ');
     }
-    if (!req.body[0].Released || req.body[0].Released.length < 10 || req.body[0].Released.length > 20 || !Date.parse(req.body[0].Released)) {
+    if (!req.body[0].Released || !/^\d{2} [A-Za-z]{3} \d{4}$/.test(req.body[0].Released) || !Date.parse(req.body[0].Released)) {
         errors.push('Released is required, must be between 10 and 20 characters, and must be a date in the form "dd mmm YYYY". ');
     }
     if (!req.body[0].Runtime || !isValidRuntime(req.body[0].Runtime)) {
         errors.push('Runtime is required, and must be between 30 and 500 minutes, inclusive.');
     }
-    if (!req.body.Genre || req.body[0].Genre.length < 2 || req.body[0].Genre.length > 50 || !isValidGenre(req.body[0].Genre)) {
-        errors.push('Genre is required, must be in the Genres collection, and must be between 2 and 50 characters. ');
+    if (!req.body[0].Genre || !/^[\w\s-]{2,50}$/.test(req.body[0].Genre)) {
+        console.log('req.body.Genre:', req.body.Genre);
+        errors.push('Genre is required, must be in the Genres collection, and must be between 2 and 50 alphabetic characters or spaces. ');
     }
-    if (!req.body[0].Director || req.body[0].Director.length < 2 || req.body[0].Director.length > 50) {
-        errors.push('Director is required, must be in the Directors collection, and must be between 2 and 50 characters. ');
+    if (!req.body[0].Director || !/^[A-Za-z\s]{2,50}$/.test(req.body[0].Director)) {
+        errors.push('Director is required, must be in the Directors collection, and must be between 2 and 50 alphabetic characters or spaces. ');
     }
+
     if (errors.length > 0) {
         return res.status(400).json({ errors: errors });
     }
     next();
+}
+
+// Function to validate movie ID
+function validateMovieId(req, res, next, errors) {
+    return [
+        param('id')
+            .custom((value, { req }) => {
+                const parts = value.split('_');
+                if (parts.length !== 2) {
+                    errors.push('Movie ID must contain a single "_" separating the title and the release year.');
+                } else {
+                    const title = parts[0];
+                    const year = parts[1];
+                    if (!title || !year) {
+                        errors.push('Movie ID must contain a title and a release year.');
+                    }
+                    if (!/^[a-z0-9\s!.\-?:;]{2,45}$/.test(title)) {
+                        errors.push('Movie title id prefix must contain only lowercase alphanumeric characters (a-z, 0-9) or punctuation (!.?-:;).');
+                    }
+                    if (!/^\d{4}$/.test(year)) {
+                        errors.push('Movie year must be a 4-digit number.');
+                    }
+                    const currYear = new Date().getFullYear();
+                    if (parseInt(year) < 1900 || parseInt(year) > currYear) {
+                        errors.push(`Movie year must be between 1900 and ${currYear}.`);
+                    }
+                }
+                return true;
+            })
+    ];
 }
 
 function isValidRuntime(runtime) {
@@ -61,19 +99,26 @@ function isValidRuntime(runtime) {
     return !isNaN(minutes) && minutes >= 30 && minutes <= 500;
 }
 
+// || !(await isValidGenre(req.body[0].Genre))
 async function isValidGenre(genre) {
     console.log('isValidGenre called');
     console.log('genre:', genre);
-
     try {
       const result = await Genre.findOne({ type: genre });
-      console.log('Genre:', result);
+      result.then((data) => {
+        console.log('Genre:', data);
+      });
 
-      if (result == null || result == undefined || result == 0) {
-        return false; // Returns true if genreObj is not null/undefined
-        } else {
-        return true;
-        }
+      const resultAll = await Genre.findAll();
+      resultAll.then((data) => {
+        console.log('All Genres:', data);
+      });
+
+      if (!result) {
+        return false; // Returns false if genre is not found
+      } else {
+        return true; // Returns true if genre is found
+      }
     } catch (error) {
       // Handle error if unable to perform genre validation
       console.error('Error validating genre:', error);
@@ -81,14 +126,23 @@ async function isValidGenre(genre) {
     }
   }
 
+// || !(await isValidDirector(req.body[0].Director))
 async function isValidDirector(director) {
+    console.log('isValidDirector called');
+    console.log('director:', director);
     try {
-        const exists = await Director.exists({ _id: director });
-        return exists;
+      const result = await Director.findOne({ type: director });
+      console.log('Director:', result);
+
+      if (!result) {
+        return false; // Returns false if genre is not found
+      } else {
+        return true; // Returns true if genre is found
+      }
     } catch (error) {
-        // Handle error if unable to perform genre validation
-        console.error('Error validating director:', error);
-        return false;
+      // Handle error if unable to perform genre validation
+      console.error('Error validating director:', error);
+      return false;
     }
 }
 

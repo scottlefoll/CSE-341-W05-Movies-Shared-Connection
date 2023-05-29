@@ -2,7 +2,7 @@ const routes = require('express').Router();
 const {param, query, validationResult} = require('express-validator');
 const moviesController = require('../controllers/movies-controller');
 const movieValidator = require('../validators/movieValidator');
-
+const curr_year = new Date().getFullYear();
 
 routes.get('/', (req, res) => {
     res.send('Welcome to the MongoDB Movies API! Please enter a valid endpoint to continue (all parameters are case-insensitive): (/db (List of databases), /movies (List of all movies), /movies/:id (single movie by id, i.e. - avatar_2009 ), /title/:title (single movie by title, i.e. - avatar [case insensitive] ), /partial/:title (all movies by partial title, i.e. - avat [case insensitive] ), /director/:name (all movies by director name, i.e. - james cameron [case insensitive]), /create/:id (create movie), /update/:id (update movie), /delete/:id (delete movie)');
@@ -30,27 +30,20 @@ routes.get('/movies', async (req, res, next) => {
     }
   });
 
-
-// routes.get('/movies/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0-9]{4}$/), async (req, res, next) => {
-routes.get('/movies/:id', [
-    param('id')
-        .notEmpty()
-        .withMessage('Movie ID is required')
-        .matches(new RegExp(`^[A-Za-z0-9]{2,}_(19[0-9]{2}|20[0-curr_year.slice(0,1)][0-curr_year.slice(-1)])$`))
-        .withMessage('Movie ID must be in the format "{Title}_{Year}", where Title is alphanumeric and at least 2 characters long, and Year is numeric, and between 1900 and the current year.')
-    ], async (req, res, next) => {
+// Route with movie ID validation
+routes.get('/movies/:id', movieValidator.validateMovieFields, async (req, res, next) => {
     console.log('in /movies/:id route');
     const result = validationResult(req);
     if (!result.isEmpty()) {
         return res.status(400).json({ errors: result.array() });
     }
     try {
-      const collection = await moviesController.getMovieById(req, res, req.params.id);
-      res.send(collection);
+        const collection = await moviesController.getMovieById(req, res, req.params.id);
+        res.send(collection);
     } catch (err) {
-      next(err);
+        next(err);
     }
-  });
+});
 
 // routes.get('/title/:Title', param('Title').notEmpty().isAlphanumeric().isLength({ max: 50 }), async (req, res, next) => {
 routes.get('/title/:Title', [
@@ -119,26 +112,21 @@ routes.get('/director/:name', [
     }
   });
 
-routes.post('/create',
-       movieValidator.validateMovieFields,  // validation middleware
-       async (req, res, next) => {
-            console.log('in /movies/create route');
-            try {
-                await moviesController.createMovie(req, res);
-            } catch (err) {
-                next(err);
-            }
-        });
+routes.post('/create', movieValidator.validateMovieFields, async (req, res, next) => {
+        console.log('in /movies/create route');
+        const result = validationResult(req);
+        if (!result.isEmpty()) {
+            return res.status(400).json({ errors: result.array() });
+        }
+        try {
+            await moviesController.createMovie(req, res);
+        } catch (err) {
+            next(err);
+        }
+    });
 
 // routes.put('/update/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0-9]{4}$/), async (req, res, next) => {
-routes.put('/update/:id', [
-    param('id')
-        .notEmpty()
-        .withMessage('Movie ID is required')
-        .matches(new RegExp(`^[A-Za-z0-9]{2,}_(19[0-9]{2}|20[0-curr_year.slice(0,1)][0-curr_year.slice(-1)])$`))
-        .withMessage('Movie ID must be in the format "{Title}_{Year}", where Title is alphanumeric and at least 2 characters long, and Year is numeric, and between 1900 and the current year.'),
-        movieValidator.validateMovieFields, // validation middleware
-    ], async (req, res, next) => {
+routes.put('/update/:id', movieValidator.validateMovieFields, async (req, res, next) => {
     console.log('in /movies/update/:id route');
     const result = validationResult(req);
     if (!result.isEmpty()) {
@@ -153,13 +141,7 @@ routes.put('/update/:id', [
 
 
 // routes.delete('/delete/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0-9]{4}$/), async (req, res, next) => {
-routes.delete('/delete/:id', [
-    param('id')
-        .notEmpty()
-        .withMessage('Movie ID is required')
-        .matches(new RegExp(`^[A-Za-z0-9]{2,}_(19[0-9]{2}|20[0-curr_year.slice(0,1)][0-curr_year.slice(-1)])$`))
-        .withMessage('Movie ID must be in the format "{Title}_{Year}", where Title is alphanumeric and at least 2 characters long, and Year is numeric, and between 1900 and the current year.')
-    ], async (req, res, next) => {
+routes.delete('/delete/:id', movieValidator.validateMovieFields, async (req, res, next) => {
     console.log('in /movies/delete/:id route');
     const result = validationResult(req);
     if (!result.isEmpty()) {
