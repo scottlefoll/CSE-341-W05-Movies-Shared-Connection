@@ -102,12 +102,10 @@ async function getMoviesByPartialTitle(req, res, title) {
 async function createMovie(req, res) {
     console.log('createMovie called');
     console.log('req.body:', req.body);
-    console.log('req.body._id:', req.body[0]._id);
     console.log('req.body.title:', req.body[0].Title);
     console.log('req.body.year:', req.body[0].Year);
     let _id2;
     try {
-      let _id = req.body[0]._id;
       let Title = req.body[0].Title;
       let Year = req.body[0].Year;
       let Rated = req.body[0].Rated;
@@ -127,19 +125,14 @@ async function createMovie(req, res) {
       let imdbVotes = req.body[0].imdbVotes;
       let imdbID = req.body[0].imdbID;
       let Type = req.body[0].Type;
-  
-      if (_id === null || _id === undefined || _id === '') {
-        // create a unique ID
-        _id2 = `${Title}_${Year}`.replace(/\s/g, '').toLowerCase();
-      } else {
-        _id2 = _id;
-      }
-  
+
+      // create a unique ID
+      _id2 = `${Title}_${Year}`.replace(/\s/g, '').toLowerCase();
+
       console.log('33 create id2:', _id2);
-      console.log('33 create id:', _id);
       console.log('33 create title:', Title);
       console.log('33 create year:', Year);
-  
+
       // Create the movie object using the Movie model in Mongoose
       const newMovie = new Movie({
         _id: _id2,
