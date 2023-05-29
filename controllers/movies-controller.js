@@ -1,6 +1,34 @@
 const { Movie } = require('../models/movie');
 // genre and director models are imported in the movie model
 
+function validateMovieFields(req, res, next) {
+    console.log('validateFields called');
+    const errors = [];
+    if (!req.body.Title || req.body.Title.length < 2 || req.body.Title.length > 50) {
+        errors.push('Title is required, and must be between 2 and 50 characters. ');
+    }
+    if (!req.body.ReleaseYear || req.body.ReleaseYear < 1900 || req.body.ReleaseYear > parseInt("20" + curr_year)) {
+        errors.push('ReleaseYear is required, and must be between 1900 and the current year, inclusive.');
+    }
+    if (!req.body.Rated || req.body.Rated.length < 2 || req.body.Rated.length > 20) {
+        errors.push('Rated is required, and must be between 2 and 20 characters. ');
+    }
+    if (!req.body.Runtime || parseInt(req.body.Runtime.substring(0, req.body.Runtime.indexOf(" "))) < 30 || parseInt(req.body.Runtime.substring(0, req.body.Runtime.indexOf(" "))) > 500) {
+        errors.push('Runtime is required, and must be between 30 and 500 minutes, inclusive.');
+    }
+    if (!req.body.Genre || req.body.Genre.length < 2 || req.body.Genre.length > 50) {
+        errors.push('Genre is required, and must be between 2 and 50 characters. ');
+    }
+    if (!req.body.Director || req.body.Director.length < 2 || req.body.Director.length > 50) {
+        errors.push('Director is required, and must be between 2 and 50 characters. ');
+    }
+    if (errors.length > 0) {
+        return res.status(400).json({ errors: errors });
+    }
+    next();
+}
+
+
 // GET /db
 async function getDBList(req, res) {
     console.log('getDBList called');
@@ -105,6 +133,14 @@ async function createMovie(req, res) {
     console.log('req.body.title:', req.body[0].Title);
     console.log('req.body.year:', req.body[0].Year);
     let _id2;
+
+    // Call validateMovieFields and check for errors
+    validateMovieFields(req, res, (error) => {
+        if (error) {
+            return res.status(400).json({ errors: error });
+        }
+    });
+
     try {
       let Title = req.body[0].Title;
       let Year = req.body[0].Year;
