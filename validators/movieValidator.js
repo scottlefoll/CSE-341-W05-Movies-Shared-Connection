@@ -69,7 +69,7 @@ async function isValidGenre(genre) {
       const result = await Genre.findOne({ type: genre });
       console.log('Genre:', result);
 
-      if (result == null or result == undefined or result == 0) {
+      if (result == null || result == undefined || result == 0) {
         return false; // Returns true if genreObj is not null/undefined
         } else {
         return true;
