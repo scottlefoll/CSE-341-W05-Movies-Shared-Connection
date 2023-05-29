@@ -38,14 +38,25 @@ function isValidRuntime(runtime) {
 
 async function isValidGenre(genre) {
     try {
-      const exists = await Genre.exists({ _id: genre });
-      return exists;
+        const exists = await Genre.exists({ _id: genre });
+        return exists;
     } catch (error) {
-      // Handle error if unable to perform genre validation
-      console.error('Error validating genre:', error);
-      return false;
+        // Handle error if unable to perform genre validation
+        console.error('Error validating genre:', error);
+        return false;
     }
-  }
+}
+
+async function isValidDirector(director) {
+    try {
+        const exists = await Director.exists({ _id: director });
+        return exists;
+    } catch (error) {
+        // Handle error if unable to perform genre validation
+        console.error('Error validating director:', error);
+        return false;
+    }
+}
 
 // GET /db
 async function getDBList(req, res) {
@@ -210,11 +221,11 @@ async function createMovie(req, res) {
         imdbID,
         Type,
       });
-  
+
       console.log('newMovie:', newMovie);
       // Save the movie object to the database
       const createdMovie = await newMovie.save();
-  
+
       return res.status(201).json({
         statusCode: 201,
         message: 'Movie created successfully',
@@ -247,9 +258,17 @@ async function updateMovie(req, res, id) {
     // since _id is immutable (Should I actually do this?)
 
     console.log('updateMovie called');
+
+    // Call validateMovieFields and check for errors
+    validateMovieFields(req, res, (error) => {
+        if (error) {
+            return res.status(400).json({ errors: error });
+        }
+    });
+
     try {
       const movieId = req.params.id;
-    console.log('movieId:', movieId);
+      console.log('movieId:', movieId);
 
       // Dynamically build the update object based on the fields present in the request body
       const updateFields = req.body[0];
