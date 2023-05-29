@@ -124,9 +124,6 @@
               "in": "body",
               "schema": {
                 "type": "array",
-                "items": {
-                  "$ref": "#/definitions/Movie"
-                },
                 "example": [
                   {
                     "Title": "Avatar",
@@ -183,9 +180,6 @@
                     "in": "body",
                     "schema": {
                       "type": "array",
-                      "items": {
-                        "$ref": "#/definitions/Movie"
-                      },
                       "example": [
                         {
                           "Title": "Avatar",
