@@ -1,62 +1,6 @@
 const { Movie, Genre, Director } = require('../models/movie');
 // genre and director models are imported in the movie model
 
-function validateMovieFields(req, res, next) {
-    console.log('validateFields called');
-    const errors = [];
-    if (!req.body.Title || req.body.Title.length < 2 || req.body.Title.length > 50) {
-        errors.push('Title is required, and must be between 2 and 50 characters. ');
-    }
-    if (!req.body.Year || req.body.Year < 1900 || req.body.Year > parseInt("20" + curr_year)) {
-        errors.push('ReleaseYear is required, and must be between 1900 and the current year, inclusive.');
-    }
-    if (!req.body.Rated || req.body.Rated.length < 2 || req.body.Rated.length > 20) {
-        errors.push('Rated is required, and must be between 2 and 20 characters. ');
-    }
-    if (!req.body.Released || req.body.Released.length < 10 || req.body.Released.length > 20 || !Date.parse(req.body.Released)) {
-        errors.push('Released is required, must be between 10 and 20 characters, and must be a date in the form "dd mmm YYYY". ');
-    }
-    if (!req.body.Runtime || !isValidRuntime(req.body.Runtime)) {
-        errors.push('Runtime is required, and must be between 30 and 500 minutes, inclusive.');
-    }
-    if (!req.body.Genre || req.body.Genre.length < 2 || req.body.Genre.length > 50 || !isValidGenre(req.body.Genre)) {
-        errors.push('Genre is required, and must be between 2 and 50 characters. ');
-    }
-    if (!req.body.Director || req.body.Director.length < 2 || req.body.Director.length > 50) {
-        errors.push('Director is required, and must be between 2 and 50 characters. ');
-    }
-    if (errors.length > 0) {
-        return res.status(400).json({ errors: errors });
-    }
-    next();
-}
-
-function isValidRuntime(runtime) {
-    const minutes = parseInt(runtime.substring(0, runtime.indexOf(" ")));
-    return !isNaN(minutes) && minutes >= 30 && minutes <= 500;
-}
-
-async function isValidGenre(genre) {
-    try {
-        const exists = await Genre.exists({ _id: genre });
-        return exists;
-    } catch (error) {
-        // Handle error if unable to perform genre validation
-        console.error('Error validating genre:', error);
-        return false;
-    }
-}
-
-async function isValidDirector(director) {
-    try {
-        const exists = await Director.exists({ _id: director });
-        return exists;
-    } catch (error) {
-        // Handle error if unable to perform genre validation
-        console.error('Error validating director:', error);
-        return false;
-    }
-}
 
 // GET /db
 async function getDBList(req, res) {
@@ -163,13 +107,6 @@ async function createMovie(req, res) {
     console.log('req.body.year:', req.body[0].Year);
     let _id2;
 
-    // Call validateMovieFields and check for errors
-    validateMovieFields(req, res, (error) => {
-        if (error) {
-            return res.status(400).json({ errors: error });
-        }
-    });
-
     try {
       let Title = req.body[0].Title;
       let Year = req.body[0].Year;
@@ -258,14 +195,6 @@ async function updateMovie(req, res, id) {
     // since _id is immutable (Should I actually do this?)
 
     console.log('updateMovie called');
-
-    // Call validateMovieFields and check for errors
-    validateMovieFields(req, res, (error) => {
-        if (error) {
-            return res.status(400).json({ errors: error });
-        }
-    });
-
     try {
       const movieId = req.params.id;
       console.log('movieId:', movieId);
