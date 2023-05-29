@@ -179,23 +179,6 @@
                     "type": "string"
                 },
                 {
-                    "name": "title",
-                    "in": "path",
-                    "type": "string"
-                  }
-                ],
-                "responses": {
-                  "200": {
-                    "description": "OK"
-                  }
-                }
-              }
-            },
-            "/create": {
-              "post": {
-                "description": "Create a movie",
-                "parameters": [
-                  {
                     "name": "body",
                     "in": "body",
                     "schema": {
