@@ -1,4 +1,4 @@
-const { Movie } = require('../models/movie');
+const { Movie, Genre, Director } = require('../models/movie');
 // genre and director models are imported in the movie model
 
 function validateMovieFields(req, res, next) {
@@ -7,19 +7,19 @@ function validateMovieFields(req, res, next) {
     if (!req.body.Title || req.body.Title.length < 2 || req.body.Title.length > 50) {
         errors.push('Title is required, and must be between 2 and 50 characters. ');
     }
-    if (!req.body.Year || req.body.Year < 1900 || req.body.ReYear > parseInt("20" + curr_year)) {
+    if (!req.body.Year || req.body.Year < 1900 || req.body.Year > parseInt("20" + curr_year)) {
         errors.push('ReleaseYear is required, and must be between 1900 and the current year, inclusive.');
     }
     if (!req.body.Rated || req.body.Rated.length < 2 || req.body.Rated.length > 20) {
         errors.push('Rated is required, and must be between 2 and 20 characters. ');
     }
-    if (!req.body.Released || req.body.Released.length < 2 || req.body.Released.length > 20 || !Date.parse(req.body.Released)) {
+    if (!req.body.Released || req.body.Released.length < 10 || req.body.Released.length > 20 || !Date.parse(req.body.Released)) {
         errors.push('Released is required, must be between 10 and 20 characters, and must be a date in the form "dd mmm YYYY". ');
     }
-    if (!req.body.Runtime || parseInt(req.body.Runtime.substring(0, req.body.Runtime.indexOf(" "))) < 30 || parseInt(req.body.Runtime.substring(0, req.body.Runtime.indexOf(" "))) > 500) {
+    if (!req.body.Runtime || !isValidRuntime(req.body.Runtime)) {
         errors.push('Runtime is required, and must be between 30 and 500 minutes, inclusive.');
     }
-    if (!req.body.Genre || req.body.Genre.length < 2 || req.body.Genre.length > 50 || !Genre.find({Genre: req.body.Genre})) {
+    if (!req.body.Genre || req.body.Genre.length < 2 || req.body.Genre.length > 50 || !isValidGenre(req.body.Genre)) {
         errors.push('Genre is required, and must be between 2 and 50 characters. ');
     }
     if (!req.body.Director || req.body.Director.length < 2 || req.body.Director.length > 50) {
@@ -31,6 +31,21 @@ function validateMovieFields(req, res, next) {
     next();
 }
 
+function isValidRuntime(runtime) {
+    const minutes = parseInt(runtime.substring(0, runtime.indexOf(" ")));
+    return !isNaN(minutes) && minutes >= 30 && minutes <= 500;
+}
+
+async function isValidGenre(genre) {
+    try {
+      const exists = await Genre.exists({ _id: genre });
+      return exists;
+    } catch (error) {
+      // Handle error if unable to perform genre validation
+      console.error('Error validating genre:', error);
+      return false;
+    }
+  }
 
 // GET /db
 async function getDBList(req, res) {
