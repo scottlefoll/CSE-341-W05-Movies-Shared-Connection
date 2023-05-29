@@ -33,8 +33,8 @@ function validateMovieFields(req, res, next) {
     if (!req.body[0].Year || req.body[0].Year < 1900 || req.body[0].Year > parseInt("20" + curr_year)) {
         errors.push('ReleaseYear is required, and must be between 1900 and the current year, inclusive.');
     }
-    if (!req.body[0].Rated || req.body[0].Rated.length < 2 || req.body[0].Rated.length > 20) {
-        errors.push('Rated is required, and must be between 2 and 20 characters. ');
+    if (!req.body[0].Rated || req.body[0].Rated.length < 1 || req.body[0].Rated.length > 20) {
+        errors.push('Rated is required, and must be between 1 and 20 characters. ');
     }
     if (!req.body[0].Released || req.body[0].Released.length < 10 || req.body[0].Released.length > 20 || !Date.parse(req.body[0].Released)) {
         errors.push('Released is required, must be between 10 and 20 characters, and must be a date in the form "dd mmm YYYY". ');
@@ -61,7 +61,7 @@ function isValidRuntime(runtime) {
 
 async function isValidGenre(genre) {
     try {
-        const exists = await Genre.exists({ _id: genre });
+        const exists = await Genre.exists({ type: genre });
         return exists;
     } catch (error) {
         // Handle error if unable to perform genre validation
