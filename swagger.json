@@ -210,6 +210,9 @@
                 "204": {
                 "description": "Update unsuccessful, no Content or record not found."
                 },
+                "201": {
+                    "description": "Update successful, record updated."
+                },
                 "500": {
                 "description": "Update unsuccessful, Internal Server Error"
                 }
