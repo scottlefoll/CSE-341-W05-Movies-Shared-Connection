@@ -122,13 +122,8 @@
               "name": "body",
               "in": "body",
               "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/Movie"
-                }
-              },
-              "example": [
-                {
+                "type": "object",
+              "properties": {
                   "Title": "Avatar",
                   "Year": 2009,
                   "Rated": "PG-13",
@@ -149,7 +144,7 @@
                   "imdbID": "tt0499549",
                   "Type": "movie"
                 }
-              ]
+              }
             }
           ],
           "responses": {
