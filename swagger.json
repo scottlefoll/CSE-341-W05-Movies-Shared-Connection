@@ -124,7 +124,7 @@
                     "in": "body",
                     "schema": {
                         "type": "object",
-                        "properties": [{
+                        "properties": {
                             "Title": {
                                 "example": "Avatar"
                             },
@@ -185,8 +185,37 @@
                             "Type": {
                                 "example": "movie"
                             }
-                        }]
+                        }
                     }
+                }
+            ],
+            "example": [
+                {
+                  "Title": "Avatar",
+                  "Year": "2009",
+                  "Rated": "PG-13",
+                  "Released": "18 Dec 2009",
+                  "Runtime": "162 min",
+                  "Genre": "Action, Adventure, Fantasy, Sci-Fi",
+                  "Director": "James Cameron",
+                  "Writer": "James Cameron",
+                  "Actors": "Sam Worthington, Zoe Saldana, Sigourney Weaver, Stephen Lang",
+                  "Plot": "A paraplegic Marine dispatched to the moon Pandora on a unique mission becomes torn between following his orders and protecting the world he feels is his home.",
+                  "Language": "English, Spanish",
+                  "Country": "USA, UK",
+                  "Awards": "Won 3 Oscars. Another 86 wins & 129 nominations.",
+                  "Poster": "https://m.media-amazon.com/images/M/MV5BMTYwOTMwMjAxMl5BMl5BanBnXkFtZTYwNzYxMzg5._V1_SX300.jpg",
+                  "Metascore": "83",
+                  "imdbRating": "7.8",
+                  "imdbVotes": {
+                    "example": "1,087,447"
+                  },
+                  "imdbID": {
+                    "example": "tt0499549"
+                  },
+                  "Type": {
+                    "example": "movie"
+                  }
                 }
             ],
             "responses": {
