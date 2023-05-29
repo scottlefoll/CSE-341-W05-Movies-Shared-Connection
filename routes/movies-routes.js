@@ -119,9 +119,6 @@ routes.get('/director/:name', [
     }
   });
 
-
-const movieValidator = require('../validators/movieValidator');
-
 routes.post('/create',
        movieValidator.validateMovieFields,  // validation middleware
        async (req, res, next) => {
