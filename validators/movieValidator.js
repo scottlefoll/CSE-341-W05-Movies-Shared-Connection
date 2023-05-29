@@ -1,3 +1,5 @@
+const curr_year = new Date().getFullYear().toString().slice(-2);
+
 const { body, validationResult } = require('express-validator')
 const userValidationRules = () => {
   return [
