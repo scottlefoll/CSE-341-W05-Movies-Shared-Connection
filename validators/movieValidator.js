@@ -1,3 +1,5 @@
+const { Movie, Genre, Director } = require('../models/movie');
+
 const curr_year = new Date().getFullYear().toString().slice(-2);
 
 const { body, validationResult } = require('express-validator')
@@ -43,10 +45,10 @@ function validateMovieFields(req, res, next) {
         errors.push('Runtime is required, and must be between 30 and 500 minutes, inclusive.');
     }
     if (!req.body.Genre || req.body[0].Genre.length < 2 || req.body[0].Genre.length > 50 || !isValidGenre(req.body[0].Genre)) {
-        errors.push('Genre is required, and must be between 2 and 50 characters. ');
+        errors.push('Genre is required, must be in the Genres collection, and must be between 2 and 50 characters. ');
     }
     if (!req.body[0].Director || req.body[0].Director.length < 2 || req.body[0].Director.length > 50) {
-        errors.push('Director is required, and must be between 2 and 50 characters. ');
+        errors.push('Director is required, must be in the Directors collection, and must be between 2 and 50 characters. ');
     }
     if (errors.length > 0) {
         return res.status(400).json({ errors: errors });
@@ -60,15 +62,24 @@ function isValidRuntime(runtime) {
 }
 
 async function isValidGenre(genre) {
+    console.log('isValidGenre called');
+    console.log('genre:', genre);
+
     try {
-        const exists = await Genre.exists({ type: genre });
-        return exists;
+      const result = await Genre.findOne({ type: genre });
+      console.log('Genre:', result);
+
+      if (result == null or result == undefined or result == 0) {
+        return false; // Returns true if genreObj is not null/undefined
+        } else {
+        return true;
+        }
     } catch (error) {
-        // Handle error if unable to perform genre validation
-        console.error('Error validating genre:', error);
-        return false;
+      // Handle error if unable to perform genre validation
+      console.error('Error validating genre:', error);
+      return false;
     }
-}
+  }
 
 async function isValidDirector(director) {
     try {
