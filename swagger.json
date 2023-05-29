@@ -114,88 +114,94 @@
           }
         }
       },
+
     "/create": {
         "post": {
-            "description": "Create a movie",
-            "parameters": [
-            {
-                "name": "body",
-                "in": "body",
-                "schema": {
-                "type": "object",
-                "properties": [{
-                    "Title": {
-                    "example": "Avatar"
-                    },
-                    "Year": {
-                    "example": "2009"
-                    },
-                    "Rated": {
-                    "example": "PG-13"
-                    },
-                    "Rated": {
-                        "example": "PG-13"
-                    },
-                    "Released": {
-                        "example": "18 Dec 2009"
-                    },
-                    "Runtime": {
-                        "example": "162 min"
-                    },
-                    "Genre": {
-                        "example": "Action, Adventure, Fantasy, Sci-Fi"
-                    },
-                    "Director": {
-                        "example": "James Cameron"
-                    },
-                    "Writer": {
-                        "example": "James Cameron"
-                    },
-                    "Actors": {
-                        "example": "Sam Worthington, Zoe Saldana, Sigourney Weaver, Stephen Lang"
-                    },
-                    "Plot": {
-                        "example": "A paraplegic Marine dispatched to the moon Pandora on a unique mission becomes torn between following his orders and protecting the world he feels is his home."
-                    },
-                    "Language": {
-                        "example": "English, Spanish"
-                    },
-                    "Country": {
-                        "example": "USA, UK"
-                    },
-                    "Awards": {
-                        "example": "Won 3 Oscars. Another 86 wins & 129 nominations."
-                    },
-                    "Poster": {
-                        "example": "https://m.media-amazon.com/images/M/MV5BMTYwOTMwMjAxMl5BMl5BanBnXkFtZTYwNzYxMzg5._V1_SX300.jpg"
-                    },
-                    "Metascore": {
-                        "example": "83"
-                    },
-                    "imdbRating": {
-                        "example": "7.8"
-                    },
-                    "imdbVotes": {
-                        "example": "1,087,447"
-                    },
-                    "imdbID": {
-                        "example": "tt0499549"
-                    },
-                    "Type": {
-                        "example": "movie"
+          "description": "Create a movie",
+          "parameters": [
+                {
+                    "name": "body",
+                    "in": "body",
+                    "schema": {
+                        "type": "array",
+                        "properties": {
+                        "Title": {
+                            "example": "Avatar"
+                        },
+                        "Year": {
+                            "example": "2009"
+                        },
+                        "Rated": {
+                            "example": "PG-13"
+                        },
+                        "Rated": {
+                            "example": "PG-13"
+                            },
+                        "Released": {
+                            "example": "18 Dec 2009"
+                        },
+                        "Runtime": {
+                            "example": "162 min"
+                        },
+                        "Genre": {
+                            "example": "Action, Adventure, Fantasy, Sci-Fi"
+                        },
+                        "Director": {
+                            "example": "James Cameron"
+                        },
+                        "Writer": {
+                            "example": "James Cameron"
+                        },
+                        "Actors": {
+                            "example": "Sam Worthington, Zoe Saldana, Sigourney Weaver, Stephen Lang"
+                        },
+                        "Plot": {
+                            "example": "A paraplegic Marine dispatched to the moon Pandora on a unique mission becomes torn between following his orders and protecting the world he feels is his home."
+                        },
+                        "Language": {
+                            "example": "English, Spanish"
+                        },
+                        "Country": {
+                            "example": "USA, UK"
+                        },
+                        "Awards": {
+                            "example": "Won 3 Oscars. Another 86 wins & 129 nominations."
+                        },
+                        "Poster": {
+                            "example": "https://m.media-amazon.com/images/M/MV5BMTYwOTMwMjAxMl5BMl5BanBnXkFtZTYwNzYxMzg5._V1_SX300.jpg"
+                        },
+                        "Metascore": {
+                            "example": "83"
+                        },
+                        "imdbRating": {
+                            "example": "7.8"
+                        },
+                        "imdbVotes": {
+                            "example": "1,087,447"
+                        },
+                        "imdbID": {
+                            "example": "tt0499549"
+                        },
+                        "Type": {
+                            "example": "movie"
+                        }
+                        }
                     }
-                }]
                 }
-            }
             ],
             "responses": {
-                "201": {
-                    "description": "Created"
+                    "201": {
+                    "description": "Record creation successful."
+                    },
+                    "400": {
+                    "description": "Record creation unsuccessful. Bad Request - Invalid input or duplicate record found"
+                    },
+                    "500": {
+                    "description": "Record creation unsuccessful. Internal Server Error"
                     }
-                }
+            }
         }
     },
-
     "/update/{id}": {
         "put": {
             "description": "Update single movie by id (ie. 'avatar_2009'). Movie ID must be in the format 'Title_Year', where Title is case-insensitive, alphanumeric and at least 2 characters long, and Year is numeric, and between 1900 and the current year.",
@@ -279,10 +285,10 @@
             ],
             "responses": {
                 "204": {
-                "description": "No Content"
+                "description": "Update unsuccessful, no Content or record not found."
                 },
                 "500": {
-                "description": "Internal Server Error"
+                "description": "Update unsuccessful, Internal Server Error"
                 }
             }
         }
@@ -301,10 +307,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Record deleted"
+            "description": "Record successfully deleted"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Record deletion unsuccessful. Internal Server Error"
           },
           "404": {
             "description": "Deletion unsuccessful, record Not Found"
