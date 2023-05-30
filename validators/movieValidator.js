@@ -1,7 +1,6 @@
 const { Movie, Genre, Director } = require('../models/movie');
-
 const curr_year = new Date().getFullYear().toString().slice(-2);
-const { body, validationResult } = require('express-validator')
+const { param, body, validationResult } = require('express-validator')
 const userValidationRules = () => {
   return [
     // username must be an email
@@ -29,10 +28,28 @@ const validateMovieFields = (req, res, next) => {
     console.log('validateMovieFields called');
     const errors = [];
 
-    if (req.params.id) {
-        const idErrors = validateMovieId(req, res, next, errors); // Invoke validateMovieId and pass errors array
-    } else {
-        errors.push('MovieId is required. ');
+    if (req.body[0].id && req.body[0].id.length > 0) {
+        const idParts = req.body[0].id.split('_');
+        if (idParts.length !== 2) {
+            errors.push('Body movieId must contain a single "_" separating the title and the release year.');
+        } else {
+            const title = parts[0];
+            const year = parts[1];
+            if (!title || !year) {
+                errors.push('Body movieId must contain a title and a release year.');
+            }
+            if (!/^[a-z0-9\s!.\-?:;]{2,45}$/.test(title)) {
+                errors.push('Body movieId title prefix must contain only lowercase alphanumeric characters (a-z, 0-9) or punctuation (!.?-:;).');
+            }
+            if (!/^\d{4}$/.test(year)) {
+                errors.push('Body movieId year suffix must be a 4-digit number.');
+            }
+            const currYear = new Date().getFullYear();
+            if (parseInt(year) < 1900 || parseInt(year) > currYear) {
+                errors.push(`Body movieId year suffix must be between 1900 and ${currYear}.`);
+            }
+        }
+        const Errors = validateMovieId(req, res, next, errors);
     }
 
     if (!req.body[0].Title || !/^[A-Za-z0-9\s-]{2,50}$/.test(req.body[0].Title)) {
@@ -50,9 +67,9 @@ const validateMovieFields = (req, res, next) => {
     if (!req.body[0].Runtime || !isValidRuntime(req.body[0].Runtime)) {
         errors.push('Runtime is required, and must be between 30 and 500 minutes, inclusive.');
     }
-    if (!req.body[0].Genre || !/^[\w\s-]{2,50}$/.test(req.body[0].Genre)) {
+    if (!req.body[0].Genre || !/^[\w\s-,]{2,100}$/.test(req.body[0].Genre)) {
         console.log('req.body.Genre:', req.body.Genre);
-        errors.push('Genre is required, must be in the Genres collection, and must be between 2 and 50 alphabetic characters or spaces. ');
+        errors.push('Genre is required, must be in the Genres collection, and must be between 2 and 100 alphabetic characters, spaces, or commas. ');
     }
     if (!req.body[0].Director || !/^[A-Za-z\s]{2,50}$/.test(req.body[0].Director)) {
         errors.push('Director is required, must be in the Directors collection, and must be between 2 and 50 alphabetic characters or spaces. ');
@@ -65,33 +82,41 @@ const validateMovieFields = (req, res, next) => {
 }
 
 // Function to validate movie ID
-function validateMovieId(req, res, next, errors) {
-    return [
-        param('id')
-            .custom((value, { req }) => {
-                const parts = value.split('_');
-                if (parts.length !== 2) {
-                    errors.push('Movie ID must contain a single "_" separating the title and the release year.');
-                } else {
-                    const title = parts[0];
-                    const year = parts[1];
-                    if (!title || !year) {
-                        errors.push('Movie ID must contain a title and a release year.');
-                    }
-                    if (!/^[a-z0-9\s!.\-?:;]{2,45}$/.test(title)) {
-                        errors.push('Movie title id prefix must contain only lowercase alphanumeric characters (a-z, 0-9) or punctuation (!.?-:;).');
-                    }
-                    if (!/^\d{4}$/.test(year)) {
-                        errors.push('Movie year must be a 4-digit number.');
-                    }
-                    const currYear = new Date().getFullYear();
-                    if (parseInt(year) < 1900 || parseInt(year) > currYear) {
-                        errors.push(`Movie year must be between 1900 and ${currYear}.`);
-                    }
-                }
-                return true;
-            })
-    ];
+const validateMovieParamId = (req, res, next) => {
+    console.log('validateMovieParamId called');
+    const errors = [];
+
+    if (req.params.id && req.params.id.length > 0) {
+        const idParts = req.params.id.split('_');
+
+        if (idParts.length !== 2) {
+            errors.push('Params movieId must contain a single "_" separating the title and the release year.');
+        } else {
+            const title = parts[0];
+            const year = parts[1];
+            if (!title || !year) {
+                errors.push('Params movieId must contain a title and a release year.');
+            }
+            if (!/^[a-z0-9\s!.\-?:;]{2,45}$/.test(title)) {
+                errors.push('Params movieId title prefix must contain only lowercase alphanumeric characters (a-z, 0-9) or punctuation (!.?-:;).');
+            }
+            if (!/^\d{4}$/.test(year)) {
+                errors.push('Params movieId year suffix must be a 4-digit number.');
+            }
+            const currYear = new Date().getFullYear();
+            if (parseInt(year) < 1900 || parseInt(year) > currYear) {
+                errors.push(`Params movieId year suffix must be between 1900 and ${currYear}.`);
+            }
+        }
+        const Errors = validateMovieId(req, res, next, errors);
+    } else {
+        errors.push('Params movieId is required.');
+    }
+
+    if (errors.length > 0) {
+        return res.status(400).json({ errors: errors });
+    }
+    next();
 }
 
 function isValidRuntime(runtime) {
@@ -158,4 +183,5 @@ module.exports = {
   userValidationRules,
   validate,
   validateMovieFields,
+  validateMovieParamId,
 }

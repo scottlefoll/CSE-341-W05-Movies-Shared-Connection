@@ -1,7 +1,7 @@
 const routes = require('express').Router();
 const {param, query, validationResult} = require('express-validator');
 const moviesController = require('../controllers/movies-controller');
-const movieValidator = require('../validators/movieValidator');
+const { validateMovieFields, validateMovieParamId } = require('../validators/movieValidator');
 const curr_year = new Date().getFullYear();
 
 routes.get('/', (req, res) => {
@@ -31,7 +31,7 @@ routes.get('/movies', async (req, res, next) => {
   });
 
 // Route with movie ID validation
-routes.get('/movies/:id', movieValidator.validateMovieFields, async (req, res, next) => {
+routes.get('/movies/:id', validateMovieParamId, async (req, res, next) => {
     console.log('in /movies/:id route');
     const result = validationResult(req);
     if (!result.isEmpty()) {
@@ -93,26 +93,26 @@ routes.get('/partial/:Title', [
 
 
 routes.get('/director/:name', [
-  param('name')
-    .matches(/^[A-Za-z]{2,}$/)
-    .withMessage('Director name is case insensitive and may be partial, and must contain only alphabetic characters and have a minimum length of 2')
-    .notEmpty()
-    .withMessage('Director name is required')
-], async (req, res, next) => {
-    console.log('in /movies/director/:name route');
-    const result = validationResult(req);
-    if (!result.isEmpty()) {
-        return res.status(400).json({ errors: result.array() });
-    }
-    try {
-      const collection = await moviesController.getMoviesByDirector(req, res, req.params.name);
-      res.send(collection);
-    } catch (err) {
-      next(err);
-    }
-  });
+    param('name')
+        .matches(/^[A-Za-z]{2,}$/)
+        .withMessage('Director name is case insensitive and may be partial, and must contain only alphabetic characters and have a minimum length of 2')
+        .notEmpty()
+        .withMessage('Director name is required')
+    ], async (req, res, next) => {
+            console.log('in /movies/director/:name route');
+            const result = validationResult(req);
+            if (!result.isEmpty()) {
+                return res.status(400).json({ errors: result.array() });
+            }
+            try {
+                const collection = await moviesController.getMoviesByDirector(req, res, req.params.name);
+                res.send(collection);
+            } catch (err) {
+                next(err);
+            }
+    });
 
-routes.post('/create', movieValidator.validateMovieFields, async (req, res, next) => {
+routes.post('/create', validateMovieFields, async (req, res, next) => {
         console.log('in /movies/create route');
         const result = validationResult(req);
         if (!result.isEmpty()) {
@@ -126,7 +126,7 @@ routes.post('/create', movieValidator.validateMovieFields, async (req, res, next
     });
 
 // routes.put('/update/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0-9]{4}$/), async (req, res, next) => {
-routes.put('/update/:id', movieValidator.validateMovieFields, async (req, res, next) => {
+routes.put('/update/:id', validateMovieParamId, validateMovieFields, async (req, res, next) => {
     console.log('in /movies/update/:id route');
     const result = validationResult(req);
     if (!result.isEmpty()) {
@@ -141,17 +141,17 @@ routes.put('/update/:id', movieValidator.validateMovieFields, async (req, res, n
 
 
 // routes.delete('/delete/:id', param('id').notEmpty().matches(/^[A-Za-z0-9]+_[A-Za-z0-9]{4}$/), async (req, res, next) => {
-routes.delete('/delete/:id', movieValidator.validateMovieFields, async (req, res, next) => {
+routes.delete('/delete/:id', validateMovieParamId,  async (req, res, next) => {
     console.log('in /movies/delete/:id route');
     const result = validationResult(req);
     if (!result.isEmpty()) {
         return res.status(400).json({ errors: result.array() });
     }
     try {
-      await moviesController.deleteMovie(req, res, req.params.id);
+        await moviesController.deleteMovie(req, res, req.params.id);
     } catch (err) {
-      next(err);
+        next(err);
     }
-  });
+    });
 
 module.exports = routes;
