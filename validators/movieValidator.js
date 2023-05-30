@@ -49,7 +49,7 @@ const validateMovieFields = (req, res, next) => {
                 errors.push(`Body movieId year suffix must be between 1900 and ${currYear}.`);
             }
         }
-        const Errors = validateMovieId(req, res, next, errors);
+        const Errors = validateMovieParamId(req, res, next, errors);
     }
 
     if (!req.body[0].Title || !/^[A-Za-z0-9\s-]{2,50}$/.test(req.body[0].Title)) {
@@ -58,7 +58,7 @@ const validateMovieFields = (req, res, next) => {
     if (!req.body[0].Year || parseInt(req.body[0].Year) < 1900 || parseInt(req.body[0].Year) > new Date().getFullYear()) {
         errors.push('ReleaseYear is required, and must be between 1900 and the current year, inclusive.');
     }
-    if (!req.body[0].Rated || !/^[A-Za-z0-9\s]{1,20}$/.test(req.body[0].Rated)) {
+    if (!req.body[0].Rated || !/^[A-Za-z0-9\s-]{1,20}$/.test(req.body[0].Rated)) {
         errors.push('Rated is required, and must be between 1 and 20 alphanumeric characters or spaces. ');
     }
     if (!req.body[0].Released || !/^\d{2} [A-Za-z]{3} \d{4}$/.test(req.body[0].Released) || !Date.parse(req.body[0].Released)) {
@@ -92,8 +92,8 @@ const validateMovieParamId = (req, res, next) => {
         if (idParts.length !== 2) {
             errors.push('Params movieId must contain a single "_" separating the title and the release year.');
         } else {
-            const title = parts[0];
-            const year = parts[1];
+            const title = idParts[0];
+            const year = idParts[1];
             if (!title || !year) {
                 errors.push('Params movieId must contain a title and a release year.');
             }
@@ -108,7 +108,6 @@ const validateMovieParamId = (req, res, next) => {
                 errors.push(`Params movieId year suffix must be between 1900 and ${currYear}.`);
             }
         }
-        const Errors = validateMovieId(req, res, next, errors);
     } else {
         errors.push('Params movieId is required.');
     }
